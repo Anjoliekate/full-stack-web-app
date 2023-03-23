@@ -1,0 +1,76 @@
+/*app.js styling
+*/
+li {
+  color: white;
+  list-style: none;
+  border: 1px solid rgb(31, 18, 25);
+  border-radius: 20px;
+  background-color: rgb(63, 58, 101);
+  font-weight: bold;
+  width: 400px;
+  padding: 10px;
+  font-size: large;
+  font-family: "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+  margin-bottom: 20px;
+}
+button {
+  background-color: rgb(189, 189, 237);
+  border: none;
+  margin: 5px 5px;
+  padding: 5px 15px;
+  border-radius: 5px;
+}
+.delete-button {
+  background-color: rgb(231, 61, 95);
+}
+input {
+  border-radius: 5px;
+  border: none;
+  margin: 5px 5px;
+}
+
+ol {
+  color: white;
+  margin: auto;
+  width: 50%;
+  padding: 10px;
+  display: grid;
+  justify-content: center;
+}
+h1 {
+  font-size: 45px;
+  font-family: Georgia;
+  color: rgb(231, 61, 95);
+  font-weight: 20px;
+}
+
+body {
+  height: 100%;
+  background-image: url("./hero.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  color: white;
+  text-align: center;
+}
+
+.container {
+  min-height: 100vh;
+}
+
+.textbox-button {
+  padding: 20px;
+  font-family: "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+}
+.song-name {
+  font-size: xx-large;
+  font-family: Georgia, Times, "Times New Roman", serif;
+}
+.song-album,
+.song-genre,
+.song-artist,
+.song-year {
+  color: rgb(193, 188, 188);
+  font-size: small;
+  font-family: sans-serif;
+}
