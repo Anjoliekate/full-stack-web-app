@@ -89,6 +89,9 @@ class MyRequestHandler(BaseHTTPRequestHandler):
                 self.send_response(500)
                 self.send_header("Access-Control-Allow-Origin", "*")
                 self.end_headers()  # always end headers even if you don't send any
+        else:
+            self.send_response(404)
+            self.end_headers()
 
     def handleCreateSong(self):
         print("request headers:", self.headers)
