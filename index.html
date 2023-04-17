@@ -9,7 +9,6 @@
   </head>
   <body>
     <div id="container-create-account">
-      <h1>Top Hits</h1>
       <div id="create-container">
         <h2 id="account">Sign Up</h2>
         <input
@@ -36,7 +35,9 @@
           style="padding: 7px; background-color: rgb(216, 216, 236)"
           id="password"
         />
-        <button id="create-account-button">Create Account</button>
+        <button onclick="signUpFunction()" id="create-account-button">
+          Create Account
+        </button>
       </div>
 
       <div id="login-container">
@@ -53,11 +54,11 @@
           style="padding: 7px; background-color: rgb(216, 216, 236)"
           id="login-password"
         />
-        <button id="login-button">Login</button>
+        <button onclick="handleLogin()" id="login-button">Login</button>
       </div>
     </div>
 
-    <div class="container-logged-in">
+    <div id="container-logged-in">
       <h1>Top Hits</h1>
       <div class="textbox-button">
         <input

@@ -52,7 +52,7 @@ body {
   text-align: center;
 }
 
-.container-logged-in {
+#container-logged-in {
   min-height: 100vh;
   display: none;
 }

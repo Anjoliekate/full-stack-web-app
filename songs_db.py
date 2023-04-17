@@ -71,5 +71,5 @@ class SongsDB:
         data = [first_name, last_name, email, pw]
 
         self.cursor.execute(
-            "INSERT INTO users(firstName, lastName, email, password) VALUES (?, ?, ?, ?, ?)", data)
+            "INSERT INTO users(firstName, lastName, email, password) VALUES (?, ?, ?, ?)", data)
         self.connection.commit()

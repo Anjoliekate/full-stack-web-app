@@ -16,12 +16,12 @@ function makeInput(e) {
   e.innerHTML = '<input id="' + aClass + '" value="' + userInput + '">';
 }
 
-var loginButton = document.getElementById("#login-button");
-var loginContainer = document.getElementById("#login-container");
-var loginEmail = document.getElementById("#login-email");
-var loginPW = document.getElementById("#login-password");
-var loggedIn = document.getElementById("#container-logged-in");
-var signUpContainer = document.getElementById("#create-container");
+var loginButton = document.getElementById("login-button");
+var loginContainer = document.getElementById("login-container");
+var loginEmail = document.getElementById("login-email");
+var loginPW = document.getElementById("login-password");
+var loggedIn = document.getElementById("container-logged-in");
+var signUpContainer = document.getElementById("create-container");
 
 function loginUser(email, password) {
   var data = "email=" + encodeURIComponent(email);
@@ -38,9 +38,9 @@ function loginUser(email, password) {
     if (response.status == 201) {
       console.log("user logged in");
       //if they successfully sign in change the sign in display of the screen to none
-      signUpContainer.style.display = "none;";
-      loginContainer.style.display = "none;";
-      loggedIn.style.display = "grid";
+      signUpContainer.style = "display: none;";
+      loginContainer.style = "display: none;";
+      loggedIn.style = "display: grid";
       loadSongsFromServer();
     } else {
       alert("Login failure due to invalid email or password.");
@@ -49,18 +49,18 @@ function loginUser(email, password) {
   });
 }
 
-loginButton.onclick = function () {
+function handleLogin() {
   var email = loginEmail.value;
   var pw = loginPW.value;
   loginUser(email, pw);
-};
+}
 
 var signupButton = document.getElementById("#create-account-button");
 
-var firstName = document.getElementById("#first-name");
-var lastName = document.getElementById("#last-name");
-var signUpEmail = document.getElementById("#email");
-var signUpPassword = document.getElementById("#password");
+var firstName = document.getElementById("first-name");
+var lastName = document.getElementById("last-name");
+var signUpEmail = document.getElementById("email");
+var signUpPassword = document.getElementById("password");
 
 function createUser(first, last, email, password) {
   var data = "firstName=" + encodeURIComponent(first);
@@ -78,9 +78,9 @@ function createUser(first, last, email, password) {
     if (response.status == 201) {
       console.log("successfully added user");
       //if they successfully sign in change the sign in display of the screen to none
-      signUpContainer.style.display = "none;";
-      loginContainer.style.display = "none;";
-      loggedIn.style.display = "grid";
+      signUpContainer.style = "display: none;";
+      loginContainer.style = "display: none;";
+      loggedIn.style = "display: grid;";
     } else if (response.status == 422) {
       alert(
         "This email is taken by another user. Please try a different email."
@@ -90,7 +90,7 @@ function createUser(first, last, email, password) {
   });
 }
 
-signupButton.onclick = function () {
+var signUpFunction = function () {
   var first = firstName.value;
   var last = lastName.value;
   var email = signUpEmail.value;
@@ -169,97 +169,107 @@ addButton.onclick = function () {
 };
 
 function loadSongsFromServer() {
-  fetch("http://localhost:8080/songs").then(function (response) {
-    response.json().then(function (data) {
-      console.log("data received from server.", data);
-      mySongs = data; // or myFriends = data.record;
+  fetch("http://localhost:8080/songs", { credentials: "include" }).then(
+    function (response) {
+      if (response.status == 200) {
+        signUpContainer.style = "display: none";
+        loginContainer.style = "display:none";
+        loggedIn.style = "display: grid";
+      } else if (response.status == 401) {
+        loginButton.style = "display:grid";
+        return;
+      }
+      response.json().then(function (data) {
+        console.log("data received from server.", data);
+        mySongs = data; // or myFriends = data.record;
 
-      var myList = document.querySelector("#my-song-list");
-      console.log("my list element:", myList);
-      myList.innerHTML = "";
+        var myList = document.querySelector("#my-song-list");
+        console.log("my list element:", myList);
+        myList.innerHTML = "";
 
-      mySongs.forEach(function (song) {
-        var newSong = document.createElement("li");
-        var nameDiv = document.createElement("div");
-        nameDiv.innerHTML = song.name; //work on this part
-        nameDiv.classList.add("song-name");
-        newSong.appendChild(nameDiv);
+        mySongs.forEach(function (song) {
+          var newSong = document.createElement("li");
+          var nameDiv = document.createElement("div");
+          nameDiv.innerHTML = song.name; //work on this part
+          nameDiv.classList.add("song-name");
+          newSong.appendChild(nameDiv);
 
-        var albumDiv = document.createElement("div");
-        albumDiv.innerHTML = song.album; //work on this part
-        albumDiv.classList.add("song-album");
-        newSong.appendChild(albumDiv);
+          var albumDiv = document.createElement("div");
+          albumDiv.innerHTML = song.album; //work on this part
+          albumDiv.classList.add("song-album");
+          newSong.appendChild(albumDiv);
 
-        var genreDiv = document.createElement("div");
-        genreDiv.innerHTML = song.genre; //work on this part
-        genreDiv.classList.add("song-genre");
-        newSong.appendChild(genreDiv);
+          var genreDiv = document.createElement("div");
+          genreDiv.innerHTML = song.genre; //work on this part
+          genreDiv.classList.add("song-genre");
+          newSong.appendChild(genreDiv);
 
-        var artistDiv = document.createElement("div");
-        artistDiv.innerHTML = song.artist; //work on this part
-        artistDiv.classList.add("song-artist");
-        newSong.appendChild(artistDiv);
+          var artistDiv = document.createElement("div");
+          artistDiv.innerHTML = song.artist; //work on this part
+          artistDiv.classList.add("song-artist");
+          newSong.appendChild(artistDiv);
 
-        var yearDiv = document.createElement("div");
-        yearDiv.innerHTML = song.year; //work on this part
-        yearDiv.classList.add("song-year");
-        newSong.appendChild(yearDiv);
+          var yearDiv = document.createElement("div");
+          yearDiv.innerHTML = song.year; //work on this part
+          yearDiv.classList.add("song-year");
+          newSong.appendChild(yearDiv);
 
-        myList.appendChild(newSong);
+          myList.appendChild(newSong);
 
-        var deleteButton = document.createElement("button");
-        deleteButton.innerHTML = "Delete";
-        deleteButton.className = "delete-button";
-        deleteButton.onclick = function () {
-          console.log("delete button was clicked for ", song.name);
-          if (confirm("Are you sure you want to delete " + song.name + "?")) {
-            deleteSongFromServer(song.id);
-          }
-        };
-        newSong.appendChild(deleteButton);
+          var deleteButton = document.createElement("button");
+          deleteButton.innerHTML = "Delete";
+          deleteButton.className = "delete-button";
+          deleteButton.onclick = function () {
+            console.log("delete button was clicked for ", song.name);
+            if (confirm("Are you sure you want to delete " + song.name + "?")) {
+              deleteSongFromServer(song.id);
+            }
+          };
+          newSong.appendChild(deleteButton);
 
-        var editButton = document.createElement("button");
-        editButton.innerHTML = "Edit";
-        editButton.className = "edit_button";
+          var editButton = document.createElement("button");
+          editButton.innerHTML = "Edit";
+          editButton.className = "edit_button";
 
-        editButton.addEventListener(
-          "click",
-          function () {
-            console.log("edit button was clicked for ", song.name);
-            var save_button = document.createElement("button");
-            newSong.appendChild(save_button);
-            save_button.innerHTML = "Save";
-            makeInput(nameDiv);
-            makeInput(albumDiv);
-            makeInput(genreDiv);
-            makeInput(artistDiv);
-            makeInput(yearDiv);
+          editButton.addEventListener(
+            "click",
+            function () {
+              console.log("edit button was clicked for ", song.name);
+              var save_button = document.createElement("button");
+              newSong.appendChild(save_button);
+              save_button.innerHTML = "Save";
+              makeInput(nameDiv);
+              makeInput(albumDiv);
+              makeInput(genreDiv);
+              makeInput(artistDiv);
+              makeInput(yearDiv);
 
-            save_button.onclick = function () {
-              var name = document.querySelector("#song-nameedit");
-              var album = document.querySelector("#song-albumedit");
-              var genre = document.querySelector("#song-genreedit");
-              var artist = document.querySelector("#song-artistedit");
-              var year = document.querySelector("#song-yearedit");
-              updateSong(
-                song.id,
-                name.value,
-                album.value,
-                genre.value,
-                artist.value,
-                year.value
-              );
-            };
-          },
-          { once: true }
-        );
+              save_button.onclick = function () {
+                var name = document.querySelector("#song-nameedit");
+                var album = document.querySelector("#song-albumedit");
+                var genre = document.querySelector("#song-genreedit");
+                var artist = document.querySelector("#song-artistedit");
+                var year = document.querySelector("#song-yearedit");
+                updateSong(
+                  song.id,
+                  name.value,
+                  album.value,
+                  genre.value,
+                  artist.value,
+                  year.value
+                );
+              };
+            },
+            { once: true }
+          );
 
-        newSong.appendChild(editButton);
+          newSong.appendChild(editButton);
 
-        myList.appendChild(newSong);
+          myList.appendChild(newSong);
+        });
       });
-    });
-  });
+    }
+  );
 }
 
 function createSongOnServer(
@@ -355,5 +365,3 @@ function updateSongFromServer(
     }
   });
 }
-
-loadSongsFromServer();

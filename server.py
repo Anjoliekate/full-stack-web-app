@@ -11,6 +11,7 @@ SESSION_STORE = SessionStore()
 
 
 class MyRequestHandler(BaseHTTPRequestHandler):
+
     def end_headers(self):
         self.sendCookie()
         self.send_header("Access-Control-Allow-Origin", self.headers["Origin"])
@@ -23,6 +24,8 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         else:
             self.cookie = cookies.SimpleCookie()
 
+        print(self.headers["Cookie"])
+
     def loadSession(self):
         # load the cookie data and check for existance of the session ID cookie
         self.loadCookie()
@@ -33,17 +36,18 @@ class MyRequestHandler(BaseHTTPRequestHandler):
             if self.sessionData == None:
                 # create a new session / session ID
                 sessionId = SESSION_STORE.createSession()
+                self.sessionData = SESSION_STORE.getSessionData(sessionId)
                 # save the new session ID into a cookie
                 self.cookie['sessionId'] = sessionId
                 # load the session with the new session ID
-                self.sessionData = SESSION_STORE.getSessionData(sessionId)
+
             else:
                 # create a new session / session ID
                 sessionId = SESSION_STORE.createSession()
+                self.sessionData = SESSION_STORE.getSessionData(sessionId)
                 # save the new session ID into a cookie
                 self.cookie['sessionId'] = sessionId
                 # load the session with the new session ID
-                self.sessionData = SESSION_STORE.getSessionData(sessionId)
 
     def sendCookie(self):
         for morsel in self.cookie.values():
@@ -65,6 +69,10 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(bytes("Not Authenticated.", "utf-8"))
 
     def handleGetSongsCollection(self):
+        if "userId" not in self.sessionData():
+            self.handle401()
+            return
+
         db = SongsDB()
         allSongs = db.getAllSongs()
         # response status code first then headers
@@ -178,26 +186,24 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         parsed_body = parse_qs(request_body)
         print("parsed request body: ", parsed_body)
 
-        # encrypt password and delete it
-
         # 2. append to MY_Users
         email = parsed_body["email"][0]
         password = parsed_body['password'][0]
 
         db = SongsDB()
-        user = db.getUserbyEmail(email)
-        if user != None:
-            if bcrypt.verify(password, user["encrypted_password"]):
-                self.sessionData['userId'] = user['userId']
-                # 3. send a response
+        user = db.checkUser(email)
+        if user:
+            if db.checkPassword(email, password):
                 self.send_response(201)
 
-                self.end_headers()  # always end headers even if you don't send any
+                self.sessionData["userId"] = user["id"]
+                self.end_headers()
+
             else:
-                self.handleUnauthorized()
+                self.handle401()
 
         else:
-            self.handleUnauthorized()
+            self.handle401()
 
     def handleCreateUser(self):
         # 1. read the date in the request body
@@ -207,8 +213,8 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         parsed_body = parse_qs(request_body)
         print("parsed request body: ", parsed_body)
         # 2. append to MY_Users
-        first_name = parsed_body["firstName"][0]
-        last_name = parsed_body["lastName"][0]
+        firstName = parsed_body["firstName"][0]
+        lastName = parsed_body["lastName"][0]
         email = parsed_body["email"][0]
         password = parsed_body["password"][0]
 
@@ -216,9 +222,9 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         exists = db.checkUser(email)
 
         if not exists:
-            db.createUsers(first_name, last_name, email, password)
+            db.createUser(firstName, lastName, email, password)
             self.send_response(201)
-            self.end_headers
+            self.end_headers()
         else:
             self.send_response(422)
             self.end_headers()
@@ -234,12 +240,14 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         email = parsed_body["email"][0]
         password = parsed_body["password"][0]
         db = SongsDB()
-        exists = db.checkUser(email)
-        if exists:
+        user = db.checkUser(email)
+        if user:
             if db.checkPassword(email, password):
+                self.loadSession()
                 self.send_response(201)
                 self.end_headers()
-                self.sessionData["userId"] = exists["userId"]
+                self.sessionData = SESSION_STORE.getSessionData("userId")
+                self.sessionData["userId"] = user["id"]
 
             else:
                 self.handle401()
@@ -276,8 +284,16 @@ class MyRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         self.loadSession()
+        print("path is:", self.path)
         if self.path == "/songs":
             self.handleCreateSong()
+            self.end_headers()
+        elif self.path == "/users":
+            self.handleCreateUser()
+            self.end_headers()
+        elif self.path == "/sessions":
+            self.handleCreateSession()
+            self.end_headers()
         else:
             self.handleNotFound()
 
