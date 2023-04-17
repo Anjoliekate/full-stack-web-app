@@ -39,28 +39,27 @@ ol {
 }
 h1 {
   font-size: 45px;
-  font-family: Georgia;
-  color: rgb(231, 61, 95);
+  font-family: "Lucida Grande";
+  color: rgb(189, 189, 237);
   font-weight: 20px;
 }
 
 body {
-  height: 100%;
-  background-image: url("./hero.jpg");
-  background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   color: white;
+  background-color: rgb(33, 29, 61);
   text-align: center;
 }
 
-.container {
+.container-logged-in {
   min-height: 100vh;
+  display: none;
 }
 
 .textbox-button {
   padding: 20px;
-  font-family: "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+  font-family: "Lucida Sans", Arial, sans-serif;
 }
 .song-name {
   font-size: xx-large;
@@ -73,4 +72,50 @@ body {
   color: rgb(193, 188, 188);
   font-size: small;
   font-family: sans-serif;
+}
+#create-account-button,
+#login-button {
+  padding: 7px;
+  font-family: "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+}
+
+#first-name,
+#last-name,
+#email,
+#password {
+  color: rgb(193, 188, 188);
+  font-size: small;
+  font-family: sans-serif;
+}
+#account {
+  display: flex;
+  color: rgb(151, 116, 192);
+  font-family: monospace;
+  display: grid;
+  justify-content: center;
+}
+#login-container {
+  border-radius: 20px;
+  background-color: rgb(63, 58, 101);
+  padding-left: 100px;
+  padding-right: 100px;
+}
+#create-container {
+  border-radius: 20px;
+  background-color: rgb(63, 58, 101);
+  padding-left: 100px;
+  padding-right: 100px;
+  margin-bottom: 75px;
+  margin-top: 50px;
+}
+#header-title {
+  display: grid;
+  justify-content: center;
+}
+
+#container-create-account {
+  display: grid;
+  justify-content: center;
+  margin-left: 300px;
+  margin-right: 300px;
 }

@@ -1,4 +1,5 @@
 import sqlite3
+from passlib.hash import bcrypt
 
 
 def dict_factory(cursor, row):
@@ -41,4 +42,34 @@ class SongsDB:
         data = [name, album, genre, artist, year, song_id]
         self.cursor.execute(
             "UPDATE songs SET name = ?, album = ?, genre = ?, artist = ?, year = ? WHERE id = ?", data)
+        self.connection.commit()
+
+    def getAllUsers(self):
+        self.cursor.execute("SELECT * FROM users")
+        records = self.cursor.fetchall()
+        return records
+
+    def checkUser(self, email):
+        data = [email]
+        self.cursor.execute(
+            "SELECT * from users WHERE email = ?", data)
+        user = self.cursor.fetchone()
+        if user:
+            return user
+        else:
+            return False
+
+    def checkPassword(self, email, password):
+        data = [email]
+        self.cursor.execute(
+            "SELECT password from users WHERE email = ?", data)
+        find_password = self.cursor.fetchone()
+        return bcrypt.verify(password, find_password["password"])
+
+    def createUser(self, first_name, last_name, email, password):
+        pw = bcrypt.hash(password)
+        data = [first_name, last_name, email, pw]
+
+        self.cursor.execute(
+            "INSERT INTO users(firstName, lastName, email, password) VALUES (?, ?, ?, ?, ?)", data)
         self.connection.commit()

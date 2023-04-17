@@ -4,6 +4,8 @@ console.log("hello world");
 //var myFriends = ["Joe", "Steve", "John", "Sara"]
 
 var mySongs = [];
+var myUsers = [];
+//make global variables to use for all functions.
 
 var h1element = document.querySelector("h1");
 console.log("my h1 element", h1element);
@@ -13,6 +15,88 @@ function makeInput(e) {
   var userInput = e.innerText;
   e.innerHTML = '<input id="' + aClass + '" value="' + userInput + '">';
 }
+
+var loginButton = document.getElementById("#login-button");
+var loginContainer = document.getElementById("#login-container");
+var loginEmail = document.getElementById("#login-email");
+var loginPW = document.getElementById("#login-password");
+var loggedIn = document.getElementById("#container-logged-in");
+var signUpContainer = document.getElementById("#create-container");
+
+function loginUser(email, password) {
+  var data = "email=" + encodeURIComponent(email);
+  data += "&password=" + encodeURIComponent(password);
+  console.log("I made it here");
+  fetch("http://localhost:8080/sessions", {
+    method: "POST",
+    body: data,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  }).then(function (response) {
+    if (response.status == 201) {
+      console.log("user logged in");
+      //if they successfully sign in change the sign in display of the screen to none
+      signUpContainer.style.display = "none;";
+      loginContainer.style.display = "none;";
+      loggedIn.style.display = "grid";
+      loadSongsFromServer();
+    } else {
+      alert("Login failure due to invalid email or password.");
+      return;
+    }
+  });
+}
+
+loginButton.onclick = function () {
+  var email = loginEmail.value;
+  var pw = loginPW.value;
+  loginUser(email, pw);
+};
+
+var signupButton = document.getElementById("#create-account-button");
+
+var firstName = document.getElementById("#first-name");
+var lastName = document.getElementById("#last-name");
+var signUpEmail = document.getElementById("#email");
+var signUpPassword = document.getElementById("#password");
+
+function createUser(first, last, email, password) {
+  var data = "firstName=" + encodeURIComponent(first);
+  data += "&lastName=" + encodeURIComponent(last);
+  data += "&email=" + encodeURIComponent(email);
+  data += "&password=" + encodeURIComponent(password);
+  fetch("http://localhost:8080/users", {
+    method: "POST",
+    body: data,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  }).then(function (response) {
+    if (response.status == 201) {
+      console.log("successfully added user");
+      //if they successfully sign in change the sign in display of the screen to none
+      signUpContainer.style.display = "none;";
+      loginContainer.style.display = "none;";
+      loggedIn.style.display = "grid";
+    } else if (response.status == 422) {
+      alert(
+        "This email is taken by another user. Please try a different email."
+      );
+      return;
+    }
+  });
+}
+
+signupButton.onclick = function () {
+  var first = firstName.value;
+  var last = lastName.value;
+  var email = signUpEmail.value;
+  var pw = signUpPassword.value;
+  createUser(first, last, email, pw);
+};
 
 var addButton = document.querySelector("#add-song-button");
 console.log("my button element", addButton);
