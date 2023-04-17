@@ -26,7 +26,7 @@ var signUpContainer = document.getElementById("#create-container");
 function loginUser(email, password) {
   var data = "email=" + encodeURIComponent(email);
   data += "&password=" + encodeURIComponent(password);
-  console.log("I made it here");
+
   fetch("http://localhost:8080/sessions", {
     method: "POST",
     body: data,
