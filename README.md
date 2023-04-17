@@ -48,8 +48,9 @@ Retrieve song member     | GET    | /songs/*\<id\>*
 Create song member       | POST   | /songs
 Update song member       | PUT    | /songs/*\<id\>*
 Delete song member       | DELETE | /songs/*\<id\>*
-Create User              | POST   | /users/*\<id\>*
+Create User              | POST   | /users/
 Login User               | POST   | /users/*\<id\>*
+Sessions                 | POST   | /sessions/*\<id>\*
 
 bcrypt.hash(password) to store encrypted password and bcrypt.verify(password) to compare encrypted passwords. 
 # s23-authentication-Anjoliekate
