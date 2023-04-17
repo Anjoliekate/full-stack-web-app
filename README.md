@@ -1,5 +1,5 @@
-# s23-resourceful-Anjoliekate
-s23-resourceful-Anjoliekate created by GitHub Classroom
+# s23-authentication-Anjoliekate
+s23-authentication-Anjoliekate created by GitHub Classroom
 
 ## Resource
 
