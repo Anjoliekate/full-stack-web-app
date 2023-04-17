@@ -1,4 +1,3 @@
-console.log("hello world");
 //inner html is the content between tags
 //value is only for input elements.
 //var myFriends = ["Joe", "Steve", "John", "Sara"]
@@ -79,8 +78,7 @@ function createUser(first, last, email, password) {
       console.log("successfully added user");
       //if they successfully sign in change the sign in display of the screen to none
       signUpContainer.style = "display: none;";
-      loginContainer.style = "display: none;";
-      loggedIn.style = "display: grid;";
+      loginContainer.style = "display: grid;";
     } else if (response.status == 422) {
       alert(
         "This email is taken by another user. Please try a different email."
@@ -123,6 +121,7 @@ function updateSong(
     //request details:
     method: "PUT",
     body: data,
+    credentials: "include",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
@@ -293,6 +292,7 @@ function createSongOnServer(
     //request details:
     method: "POST",
     body: data,
+    credentials: "include",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
@@ -313,6 +313,7 @@ function createSongOnServer(
 function deleteSongFromServer(songId) {
   fetch("http://localhost:8080/songs/" + songId, {
     method: "DELETE",
+    credentials: "include",
   }).then(function (response) {
     console.log(response);
     if (response.status == 204) {
@@ -349,6 +350,7 @@ function updateSongFromServer(
     //request details:
     method: "PUT",
     body: data,
+    credentials: "include",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
@@ -365,3 +367,5 @@ function updateSongFromServer(
     }
   });
 }
+
+loadSongsFromServer();

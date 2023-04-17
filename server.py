@@ -24,7 +24,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         else:
             self.cookie = cookies.SimpleCookie()
 
-        print(self.headers["Cookie"])
+        print(self.cookie)
 
     def loadSession(self):
         # load the cookie data and check for existance of the session ID cookie
@@ -36,25 +36,25 @@ class MyRequestHandler(BaseHTTPRequestHandler):
             if self.sessionData == None:
                 # create a new session / session ID
                 sessionId = SESSION_STORE.createSession()
-                self.sessionData = SESSION_STORE.getSessionData(sessionId)
                 # save the new session ID into a cookie
                 self.cookie['sessionId'] = sessionId
                 # load the session with the new session ID
+                self.sessionData = SESSION_STORE.getSessionData(sessionId)
 
-            else:
-                # create a new session / session ID
-                sessionId = SESSION_STORE.createSession()
-                self.sessionData = SESSION_STORE.getSessionData(sessionId)
-                # save the new session ID into a cookie
-                self.cookie['sessionId'] = sessionId
-                # load the session with the new session ID
+        else:
+            # create a new session / session ID
+            sessionId = SESSION_STORE.createSession()
+            # save the new session ID into a cookie
+            self.cookie['sessionId'] = sessionId
+            # load the session with the new session ID
+            self.sessionData = SESSION_STORE.getSessionData(sessionId)
 
     def sendCookie(self):
         for morsel in self.cookie.values():
-            if "Postman" not in self.header["User-Agent"]:
+            if "Postman" not in self.headers["User-Agent"]:
                 morsel["samesite"] = "None"
                 morsel["secure"] = True
-            self.send_headers("Set-Cookie", morsel.OutputString())
+            self.send_header("Set-Cookie", morsel.OutputString())
 
     def handleNotFound(self):
         self.send_response(404)
@@ -69,7 +69,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(bytes("Not Authenticated.", "utf-8"))
 
     def handleGetSongsCollection(self):
-        if "userId" not in self.sessionData():
+        if "userId" not in self.sessionData:
             self.handle401()
             return
 
@@ -78,7 +78,6 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         # response status code first then headers
         self.send_response(200)
         self.send_header("Content-type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
         # response body ->
 
@@ -86,6 +85,9 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(bytes(json.dumps(allSongs), "utf-8"))
 
     def handleGetSongsMember(self, song_id):
+        if "userId" not in self.sessionData:
+            self.handle401()
+            return
         db = SongsDB()
         oneSong = db.getOneSong(song_id)
 
@@ -94,7 +96,6 @@ class MyRequestHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             # response header:
             self.send_header("Content-Type", "application/json")
-            self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             # response body:
             self.wfile.write(bytes(json.dumps(oneSong), "utf-8"))  # jsonify
@@ -102,6 +103,9 @@ class MyRequestHandler(BaseHTTPRequestHandler):
             self.handleNotFound()
 
     def handleDeleteSong(self, member_id):
+        if "userId" not in self.sessionData:
+            self.handle401()
+            return
         db = SongsDB()
         member = db.getOneSong(member_id)
         # 1. read the date in the request body
@@ -110,7 +114,6 @@ class MyRequestHandler(BaseHTTPRequestHandler):
                 db.deleteSong(member_id)
 
                 self.send_response(204)
-                self.send_header("Access-Control-Allow-Origin", "*")
                 self.end_headers()  # always end headers even if you don't send any
 
             except:
@@ -122,6 +125,9 @@ class MyRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
     def handleUpdateSong(self, member_id):
+        if "userId" not in self.sessionData:
+            self.handle401()
+            return
         db = SongsDB()
         member = db.getOneSong(member_id)
         # 1. read the date in the request body
@@ -140,26 +146,23 @@ class MyRequestHandler(BaseHTTPRequestHandler):
                 db.updateSong(member_id, name, album, genre, artist, year)
 
                 self.send_response(200)
-                self.send_header("Access-Control-Allow-Origin", "*")
                 self.end_headers()  # always end headers even if you don't send any
 
             except:
                 self.send_response(500)
-                self.send_header("Access-Control-Allow-Origin", "*")
                 self.end_headers()  # always end headers even if you don't send any
         else:
             self.send_response(404)
             self.end_headers()
 
     def handleCreateSong(self):
-        print("request headers:", self.headers)
-
+        if "userId" not in self.sessionData:
+            self.handle401()
+            return
         # 1. read the date in the request body
         length = int(self.headers["Content-Length"])
         request_body = self.rfile.read(length).decode("utf-8")
-        print("raw request body:", request_body)
         parsed_body = parse_qs(request_body)
-        print("parsed request body: ", parsed_body)
 
         # 2. append to MY_SONGS
         name = parsed_body["name"][0]
@@ -173,18 +176,13 @@ class MyRequestHandler(BaseHTTPRequestHandler):
 
         # 3. send a response
         self.send_response(201)
-        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()  # always end headers even if you don't send any
 
     def handleCreateSession(self):
-        print("request headers:", self.headers)
-
         # 1. read the date in the request body
         length = int(self.headers["Content-Length"])
         request_body = self.rfile.read(length).decode("utf-8")
-        print("raw request body:", request_body)
         parsed_body = parse_qs(request_body)
-        print("parsed request body: ", parsed_body)
 
         # 2. append to MY_Users
         email = parsed_body["email"][0]
@@ -194,9 +192,8 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         user = db.checkUser(email)
         if user:
             if db.checkPassword(email, password):
-                self.send_response(201)
-
                 self.sessionData["userId"] = user["id"]
+                self.send_response(201)
                 self.end_headers()
 
             else:
@@ -246,7 +243,6 @@ class MyRequestHandler(BaseHTTPRequestHandler):
                 self.loadSession()
                 self.send_response(201)
                 self.end_headers()
-                self.sessionData = SESSION_STORE.getSessionData("userId")
                 self.sessionData["userId"] = user["id"]
 
             else:
@@ -258,7 +254,6 @@ class MyRequestHandler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self.loadSession()
         self.send_response(200)
-        self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods",
                          "GET, POST, PUT, DELETE, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
