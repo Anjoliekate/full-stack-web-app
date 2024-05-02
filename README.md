@@ -58,3 +58,5 @@ bcrypt.hash(password) to store encrypted password and bcrypt.verify(password) to
 Full-stack web-app that utilizes javascript, HTML, and CSS to create a full interactive user-platform. This app allows for users to keep track of their favorite songs. It implements REST endpoints GET, POST, PUT, and DELETE to allow the user to take action with their song collection accordingly. Implements full user authentication, authorization, validation, and sessions to ensure a smooth user experience. 
 
 The backend includes python for the server and sqlite for the database. The python server communicates with the sqlite database via a databse handler script that uses the sqlite3 library to handle queries. 
+
+<img width="1218" alt="Screenshot 2024-05-01 at 10 43 16 PM" src="https://github.com/Anjoliekate/full-stack-web-app/assets/99061657/53bf90a7-966a-4e1b-8339-ffcc060d6ab4">
