@@ -53,5 +53,7 @@ Login User               | POST   | /users/*\<id\>*
 Sessions                 | POST   | /sessions/*\<id\*
 
 bcrypt.hash(password) to store encrypted password and bcrypt.verify(password) to compare encrypted passwords. 
-# s23-authentication-Anjoliekate
-# s23-authentication-Anjoliekate
+
+## Overview
+
+Full-stack web-app that utilizes javascript, HTML, and CSS to create a full interactive user-platform. This app allows for users to keep track of their favorite songs. It implements REST endpoints GET, POST, PUT, and DELETE to allow the user to take action with their song collection accordingly. Implements full user authentication, authorization, validation, and sessions to ensure a smooth user experience. 
